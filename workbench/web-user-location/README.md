@@ -54,5 +54,47 @@ them within the shapefile. I don't know how to do this so that's be a big challe
 
 This workbench aims to explore the following:
 
-1. How do I get the user's current location via the HTML 5 Geolocation API?
-1.
+- [x] How do I get the user's current location via the HTML 5 Geolocation API?
+- [ ] Can I use the GeoNames data to locate a user?
+- [ ] Once I have the location, can I work out their closest weather station
+
+### Run the demo site
+
+To get the demo site up and running, make sure you have Node & NPM installed and
+run:
+
+    npm i
+    npm start
+
+## Discussion
+
+### Data treatment
+
+I don't include the source data in the Git repository as they're large and
+easily accessible should you wish to use them yourself.
+
+For the GeoNames work, I downloaded the [Australian
+data](http://download.geonames.org/export/dump/AU.zip), extracted the data file
+(`.txt`), renamed it to `geonames.txt` and placed it in `scripts/data/`. The
+data fields are described in the [GeoNames
+readme](http://download.geonames.org/export/dump/readme.txt).
+
+The Australian Bureau of Meteorology (weather station
+list)[ftp://ftp.bom.gov.au/anon2/home/ncc/metadata/sitelists/stations.zip]
+contains a fixed-width text file. I extracted this and placed it in
+`scripts/data/stations.txt`.
+
+To run the scripts
+
+    virtualenv -p python3.6 venv
+    . venv/bin/activate
+    pip install -r requirements.txt
+
+The processed `json` data files used in the workbench site are placed under `site/data`.
+
+# Citations
+
+- The GeoNames data is licensed under a [Creative Commons Attribution 3.0
+  License](http://creativecommons.org/licenses/by/3.0/)
+
+- The Australian Bureau of Meteorology data is [Copyright Commonwealth of Australia 2018, Bureau of Meteorology](http://www.bom.gov.au/other/copyright.shtml?ref=ftr)

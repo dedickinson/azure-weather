@@ -259,3 +259,8 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+# SITE
+workbench/web-user-location/scripts/data/*
+!workbench/web-user-location/scripts/data/README.md
+venv
