@@ -40,22 +40,34 @@ if __name__ == "__main__":
 
     df = load_station_data(station_col_spec)
 
-    # We only want the active stations (where End is null)
-    df = df.loc[(df['STA'] == 'QLD') & (df['End'].isnull()),
-                ['Site', 'Site name', 'Lat', 'Lon', 'STA']]
-
     rename_mapper = {
         'Site': 'id',
+        'Dist': 'dist',
         'Site name': 'name',
+        'Start': 'start',
+        'End': 'end',
         'Lat': 'lat',
         'Lon': 'lon',
-        'STA': 'state'
+        'Source': 'source',
+        'STA': 'state',
+        'Height (m)': 'height',
+        'Bar_ht': 'bar_ht',
+        'WMO': 'wmo_id'
     }
     df.rename(rename_mapper, inplace=True, axis='columns')
 
     df.loc[:, 'state'] = df['state'].str.lower()
     df.loc[:, 'country'] = 'australia'
+    df.loc[:, 'country_code'] = 'AU'
     df.loc[:, 'provider'] = 'bom'
 
-    with open("../site/data/stations.json", 'w') as f:
+    with open("tmp/stations.json", 'w') as f:
         f.write(df.to_json(orient='records'))
+
+    print('-' * 79)
+    print(df.info())
+    print('-' * 79)
+    print(df.describe())
+    print('-' * 79)
+    print(df.head(5))
+    print('-' * 79)

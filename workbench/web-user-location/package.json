@@ -2,9 +2,8 @@
   "name": "web-user-location",
   "version": "0.1.0",
   "description": "Enquiry into working with location data",
-  "main": "index.js",
   "scripts": {
-    "start": "node_modules/.bin/http-server site/ -o -p 8888"
+    "start": "npx http-server site/ -o -p 8888"
   },
   "author": "Duncan Dickinson",
   "license": "BSD-2-Clause",

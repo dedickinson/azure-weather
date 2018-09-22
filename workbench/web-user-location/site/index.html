@@ -4,19 +4,26 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-    <script src="main.js"></script>
+    <script src="userlocation.js"></script>
+    <title>
+        User location demo
+    </title>
 </head>
 
 <body>
-    <h1>User location workbench demo</h1>
+    <h1>Accessing the user's location</h1>
 
-    <ul>
-        <li><a href="userlocation.html">HTML5 Geolocation API</a></li>
-        <li><a href=""></a></li>
-    </ul>
+    <h2>Using the HTML Geolocation API</h2>
+
+    <p>
+        This section of work is based on the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API">MDN
+            docs</a>
+    </p>
+
+    <p><button onclick="geoFindMe()">Show my location</button></p>
+    <div id="out"></div>
+
 </body>
 
 </html>
