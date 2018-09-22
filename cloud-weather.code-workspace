@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "workbench/web-user-location"
+		}
+	],
+	"settings": {
+		"restructuredtext.confPath": ""
+	}
+}

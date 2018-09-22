@@ -1,0 +1,455 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Spikes &#8212; Cloud Weather 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Environment" href="Environment.html" /> 
+  </head><body>
+      <div class="header" role="banner"><h1 class="heading"><a href="index.html">
+          <span>Cloud Weather 0.1.0 documentation</span></a></h1>
+        <h2 class="heading"><span>Spikes</span></h2>
+      </div>
+      <div class="topnav" role="navigation" aria-label="top navigation">
+      
+        <p>
+        «&#160;&#160;<a href="Environment.html">Environment</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="spikes">
+<h1><a class="toc-backref" href="#id23">Spikes</a><a class="headerlink" href="#spikes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="getting-a-web-user-s-location">
+<h2><a class="toc-backref" href="#id24">Getting a web user’s location</a><a class="headerlink" href="#getting-a-web-user-s-location" title="Permalink to this headline">¶</a></h2>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#spikes" id="id3">Spikes</a><ul>
+<li><a class="reference internal" href="#getting-a-web-user-s-location" id="id4">Getting a web user’s location</a><ul>
+<li><a class="reference internal" href="#overview" id="id5">Overview</a></li>
+<li><a class="reference internal" href="#user-location" id="id6">User location</a></li>
+<li><a class="reference internal" href="#weather-station-location" id="id7">Weather station location</a></li>
+<li><a class="reference internal" href="#weather-forecast-location" id="id8">Weather forecast location</a></li>
+<li><a class="reference internal" href="#bringing-the-data-together" id="id9">Bringing the data together</a></li>
+<li><a class="reference internal" href="#the-challenges" id="id10">The Challenges</a></li>
+<li><a class="reference internal" href="#spike-solution" id="id11">Spike solution</a><ul>
+<li><a class="reference internal" href="#geolocation-api" id="id12">GeoLocation API</a></li>
+<li><a class="reference internal" href="#data-sources" id="id13">Data sources</a><ul>
+<li><a class="reference internal" href="#geonames-places" id="id14">GeoNames: Places</a></li>
+<li><a class="reference internal" href="#geonames-post-codes" id="id15">GeoNames: Post codes</a></li>
+<li><a class="reference internal" href="#australian-bureau-of-meteorology-bom" id="id16">Australian Bureau of Meteorology (BOM)</a></li>
+<li><a class="reference internal" href="#azure-maps" id="id17">Azure Maps</a></li>
+<li><a class="reference internal" href="#azure-search" id="id18">Azure Search</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outcomes" id="id19">Outcomes</a></li>
+<li><a class="reference internal" href="#citations" id="id20">Citations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#web-ui" id="id21">Web UI</a><ul>
+<li><a class="reference internal" href="#id2" id="id22">Overview</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="overview">
+<h3><a class="toc-backref" href="#id25">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h3>
+<p>For the web UI I wanted to have a static site calling into APIs.</p>
+<p>The user requirement can be described in the following user story:</p>
+<p><strong>As a user I want to locate my nearest weather station so that I can access
+observations and forecasts relevant to me</strong></p>
+</div>
+<div class="section" id="user-location">
+<h3><a class="toc-backref" href="#id26">User location</a><a class="headerlink" href="#user-location" title="Permalink to this headline">¶</a></h3>
+<p>We’re likely to be able to determine the user’s location via either :</p>
+<ul class="simple">
+<li>Use the <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API">HTML 5 Geolocation API</a></li>
+<li>Ask the user to enter their postcode or town</li>
+<li>Ask the user to click on a map (e.g. to select a station or area)</li>
+</ul>
+</div>
+<div class="section" id="weather-station-location">
+<h3><a class="toc-backref" href="#id27">Weather station location</a><a class="headerlink" href="#weather-station-location" title="Permalink to this headline">¶</a></h3>
+<p>Various weather agencies list their station details - e.g.:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.bom.gov.au/climate/data/stations/">Australian BoM</a></li>
+<li><a class="reference external" href="https://www.metoffice.gov.uk/public/weather/climate-network/#?tab=climateNetwork">UK Met Office</a></li>
+</ul>
+<p>These will have the GPS co-ordinate of the station.</p>
+</div>
+<div class="section" id="weather-forecast-location">
+<h3><a class="toc-backref" href="#id28">Weather forecast location</a><a class="headerlink" href="#weather-forecast-location" title="Permalink to this headline">¶</a></h3>
+<p>These appear to mainly utilise a town/area name (e.g. “Brisbane”) but can also
+have an associated <a class="reference external" href="https://en.wikipedia.org/wiki/Shapefile">shape file</a> that
+designates the forecast area.</p>
+<p>The Australian BoM describes the forecast spatial data in <a class="reference external" href="http://reg.bom.gov.au/catalogue/spatialdata.pdf">a brief
+guide</a>. The shape files are
+available via the <a class="reference external" href="ftp://ftp.bom.gov.au/anon/home/adfd/spatial/">BOM’s FTP site</a> under the <code class="docutils literal notranslate"><span class="pre">IDM00001.*</span></code> files.</p>
+</div>
+<div class="section" id="bringing-the-data-together">
+<h3><a class="toc-backref" href="#id29">Bringing the data together</a><a class="headerlink" href="#bringing-the-data-together" title="Permalink to this headline">¶</a></h3>
+<p>Once I know where the user is, I could use the <a class="reference external" href="https://en.wikipedia.org/wiki/Haversine_formula">Haversine
+formula</a> to determine their
+nearest weather station. The trouble with the Haversine approach is that I’ll
+need to limit the stations in some manner (e.g. using a lat/long box based on
+some calculation). I could assume that if there’s nothing within 100km of the
+user then the system will need to let the user know that there’s no available
+data. Alternatively, I could use a map/GIS service to do the heavy lifting for
+me.</p>
+<p>For forecasts, I’d like to try and work out the user’s forecast area by placing
+them within the shapefile. I don’t know how to do this so that’ll be a big
+challenge.</p>
+</div>
+<div class="section" id="the-challenges">
+<h3><a class="toc-backref" href="#id30">The Challenges</a><a class="headerlink" href="#the-challenges" title="Permalink to this headline">¶</a></h3>
+<p>This workbench aims to explore the following:</p>
+<ul class="simple">
+<li>How do I get the user’s current location via the HTML 5 Geolocation API?</li>
+<li>Can I use the GeoNames data to locate a user?</li>
+<li>Can I Azure Maps data to locate a user?</li>
+<li>Can I use a postcode listing to locate a user?</li>
+<li>Once I have the location, can I work out their closest weather station?</li>
+<li>Once I have the location, can I work out their forecast region?</li>
+</ul>
+</div>
+<div class="section" id="spike-solution">
+<h3><a class="toc-backref" href="#id31">Spike solution</a><a class="headerlink" href="#spike-solution" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="geolocation-api">
+<h4><a class="toc-backref" href="#id32">GeoLocation API</a><a class="headerlink" href="#geolocation-api" title="Permalink to this headline">¶</a></h4>
+<p>The API worked as advertised (hardly surprising).</p>
+<p>The very basic code is in <code class="docutils literal notranslate"><span class="pre">site/index.html</span></code>.</p>
+<p>To get the demo site up and running, make sure you have Node &amp; NPM installed and
+run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">npm</span> <span class="n">i</span>
+<span class="n">npm</span> <span class="n">start</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="data-sources">
+<h4><a class="toc-backref" href="#id33">Data sources</a><a class="headerlink" href="#data-sources" title="Permalink to this headline">¶</a></h4>
+<p>A few small python scripts in the <code class="docutils literal notranslate"><span class="pre">scripts</span></code> directory provide data wrangling
+from source formats into JSON.</p>
+<p>Get started by changing into the <code class="docutils literal notranslate"><span class="pre">web-user-location</span></code> directory and running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">virtualenv</span> <span class="n">venv</span>
+<span class="o">.</span> <span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<p>I don’t include the source data in the Git repository as they’re large and
+easily accessible should you wish to use them yourself.</p>
+<div class="section" id="geonames-places">
+<h5><a class="toc-backref" href="#id34">GeoNames: Places</a><a class="headerlink" href="#geonames-places" title="Permalink to this headline">¶</a></h5>
+<p>For the GeoNames work, I downloaded the <a class="reference external" href="http://download.geonames.org/export/dump/AU.zip">Australian data</a>, extracted the data file
+(<code class="docutils literal notranslate"><span class="pre">.txt</span></code>), renamed it to <code class="docutils literal notranslate"><span class="pre">geonames.txt</span></code> and placed it in <code class="docutils literal notranslate"><span class="pre">scripts/data/</span></code>.
+The data fields are described in the <a class="reference external" href="http://download.geonames.org/export/dump/readme.txt">GeoNames readme</a>.</p>
+<p>Data handling script: <code class="docutils literal notranslate"><span class="pre">scripts/geoname-extract-places.py</span></code></p>
+<p>The JSON output looks as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Zanthus&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">31.03511</span><span class="p">,</span>
+    <span class="s2">&quot;long&quot;</span><span class="p">:</span> <span class="mf">123.57749</span><span class="p">,</span>
+    <span class="s2">&quot;feature_class&quot;</span><span class="p">:</span> <span class="s2">&quot;P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;feature_code&quot;</span><span class="p">:</span> <span class="s2">&quot;PPL&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;country_code&quot;</span><span class="p">:</span> <span class="s2">&quot;AU&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;timezone&quot;</span><span class="p">:</span> <span class="s2">&quot;Australia/Perth&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;country&quot;</span><span class="p">:</span> <span class="s2">&quot;Australia&quot;</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Yunta&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">32.58333</span><span class="p">,</span>
+    <span class="s2">&quot;long&quot;</span><span class="p">:</span> <span class="mf">139.55</span><span class="p">,</span>
+    <span class="s2">&quot;feature_class&quot;</span><span class="p">:</span> <span class="s2">&quot;P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;feature_code&quot;</span><span class="p">:</span> <span class="s2">&quot;PPL&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;country_code&quot;</span><span class="p">:</span> <span class="s2">&quot;AU&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;timezone&quot;</span><span class="p">:</span> <span class="s2">&quot;Australia/Adelaide&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;country&quot;</span><span class="p">:</span> <span class="s2">&quot;Australia&quot;</span>
+  <span class="p">},</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="geonames-post-codes">
+<h5><a class="toc-backref" href="#id35">GeoNames: Post codes</a><a class="headerlink" href="#geonames-post-codes" title="Permalink to this headline">¶</a></h5>
+<p>I got the <a class="reference external" href="http://download.geonames.org/export/zip/AU.zip">Australian postcodes from GeoNames</a>, extracted the data
+file(<code class="docutils literal notranslate"><span class="pre">.txt</span></code>), renamed it to <code class="docutils literal notranslate"><span class="pre">postcodes.txt</span></code> and placed it in
+<code class="docutils literal notranslate"><span class="pre">scripts/data/</span></code>. The fields are as follows:</p>
+<ul class="simple">
+<li>country code      : iso country code, 2 characters</li>
+<li>postal code       : varchar(20)</li>
+<li>place name        : varchar(180)</li>
+<li>admin name1       : 1. order subdivision (state) varchar(100)</li>
+<li>admin code1       : 1. order subdivision (state) varchar(20)</li>
+<li>admin name2       : 2. order subdivision (county/province) varchar(100)</li>
+<li>admin code2       : 2. order subdivision (county/province) varchar(20)</li>
+<li>admin name3       : 3. order subdivision (community) varchar(100)</li>
+<li>admin code3       : 3. order subdivision (community) varchar(20)</li>
+<li>latitude          : estimated latitude (wgs84)</li>
+<li>longitude         : estimated longitude (wgs84)</li>
+<li>accuracy          : accuracy of lat/lng from 1=estimated to 6=centroid</li>
+</ul>
+<p>Data handling script: <code class="docutils literal notranslate"><span class="pre">scripts/geoname-extract-postcodes.py</span></code></p>
+<p>The JSON output looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="s2">&quot;country_code&quot;</span><span class="p">:</span> <span class="s2">&quot;AU&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;postal_code&quot;</span><span class="p">:</span> <span class="s2">&quot;0221&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;place_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Barton&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;Australian Capital Territory&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">35.3049</span><span class="p">,</span>
+    <span class="s2">&quot;long&quot;</span><span class="p">:</span> <span class="mf">149.1412</span><span class="p">,</span>
+    <span class="s2">&quot;accuracy&quot;</span><span class="p">:</span> <span class="s2">&quot;4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;country&quot;</span><span class="p">:</span> <span class="s2">&quot;Australia&quot;</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="s2">&quot;country_code&quot;</span><span class="p">:</span> <span class="s2">&quot;AU&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;postal_code&quot;</span><span class="p">:</span> <span class="s2">&quot;2540&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;place_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Wreck Bay&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;Australian Capital Territory&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">35.1627</span><span class="p">,</span>
+    <span class="s2">&quot;long&quot;</span><span class="p">:</span> <span class="mf">150.6907</span><span class="p">,</span>
+    <span class="s2">&quot;accuracy&quot;</span><span class="p">:</span> <span class="s2">&quot;4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;country&quot;</span><span class="p">:</span> <span class="s2">&quot;Australia&quot;</span>
+  <span class="p">},</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="australian-bureau-of-meteorology-bom">
+<h5><a class="toc-backref" href="#id36">Australian Bureau of Meteorology (BOM)</a><a class="headerlink" href="#australian-bureau-of-meteorology-bom" title="Permalink to this headline">¶</a></h5>
+<p>The Australian Bureau of Meteorology <a class="reference external" href="ftp://ftp.bom.gov.au/anon2/home/ncc/metadata/sitelists/stations.zip">weather station
+list</a>
+contains a fixed-width text file. I extracted this and placed it in
+<code class="docutils literal notranslate"><span class="pre">scripts/data/stations.txt</span></code>.</p>
+<p>Data handling script: <code class="docutils literal notranslate"><span class="pre">scripts/bomstations-extract-full.py</span></code></p>
+<p>The JSON output looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span>
+  <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;001000&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;dist&quot;</span><span class="p">:</span> <span class="s2">&quot;01&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;KARUNJIE&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="s2">&quot;1940&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="s2">&quot;1983&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="s2">&quot;-16.2919&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="s2">&quot;127.1956&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+  <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;wa&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="s2">&quot;320.0&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;bar_ht&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+  <span class="s2">&quot;wmo_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+  <span class="s2">&quot;country&quot;</span><span class="p">:</span> <span class="s2">&quot;australia&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;country_code&quot;</span><span class="p">:</span> <span class="s2">&quot;AU&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;provider&quot;</span><span class="p">:</span> <span class="s2">&quot;bom&quot;</span>
+<span class="p">},</span> <span class="p">{</span>
+  <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;001001&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;dist&quot;</span><span class="p">:</span> <span class="s2">&quot;01&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;OOMBULGURRI&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="s2">&quot;1914&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="s2">&quot;2012&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="s2">&quot;-15.1806&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="s2">&quot;127.8456&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;GPS&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;wa&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;bar_ht&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+  <span class="s2">&quot;wmo_id&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+  <span class="s2">&quot;country&quot;</span><span class="p">:</span> <span class="s2">&quot;australia&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;country_code&quot;</span><span class="p">:</span> <span class="s2">&quot;AU&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;provider&quot;</span><span class="p">:</span> <span class="s2">&quot;bom&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="azure-maps">
+<h5><a class="toc-backref" href="#id37">Azure Maps</a><a class="headerlink" href="#azure-maps" title="Permalink to this headline">¶</a></h5>
+<p>The <a class="reference external" href="https://azure.microsoft.com/en-au/services/azure-maps/">Azure Maps service</a> provides a number of useful APIs.</p>
+<p>The following query for the suburb of “Burpengary”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://atlas.microsoft.com/search/address/json?api-version=1.0&amp;query=burpengary&amp;countrySet=AU&amp;subscription-key=&lt;KEY&gt;
+</pre></div>
+</div>
+<p>Yielded the response below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;summary&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;burpengary&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;queryType&quot;</span><span class="p">:</span> <span class="s2">&quot;NON_NEAR&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;queryTime&quot;</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span>
+    <span class="s2">&quot;numResults&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;totalResults&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="s2">&quot;fuzzyLevel&quot;</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Geography&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;AU/GEO/p0/9961&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mf">4.5</span><span class="p">,</span>
+      <span class="s2">&quot;info&quot;</span><span class="p">:</span> <span class="s2">&quot;search:ta:036043075000418-AU&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;entityType&quot;</span><span class="p">:</span> <span class="s2">&quot;MunicipalitySubdivision&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;municipalitySubdivision&quot;</span><span class="p">:</span> <span class="s2">&quot;Burpengary&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;municipality&quot;</span><span class="p">:</span> <span class="s2">&quot;Brisbane&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;countrySecondarySubdivision&quot;</span><span class="p">:</span> <span class="s2">&quot;Brisbane&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;countrySubdivision&quot;</span><span class="p">:</span> <span class="s2">&quot;Queensland&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;countryCode&quot;</span><span class="p">:</span> <span class="s2">&quot;AU&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;country&quot;</span><span class="p">:</span> <span class="s2">&quot;Australia&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;countryCodeISO3&quot;</span><span class="p">:</span> <span class="s2">&quot;AUS&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;freeformAddress&quot;</span><span class="p">:</span> <span class="s2">&quot;Brisbane Burpengary, Queensland&quot;</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">27.15282</span><span class="p">,</span>
+        <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">152.97663</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;viewport&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;topLeftPoint&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">27.12433</span><span class="p">,</span>
+          <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">152.91752</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;btmRightPoint&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">27.18634</span><span class="p">,</span>
+          <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">152.98447</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;boundingBox&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;topLeftPoint&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">27.12433</span><span class="p">,</span>
+          <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">152.91752</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;btmRightPoint&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">27.18634</span><span class="p">,</span>
+          <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">152.98447</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;dataSources&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;00005831-3200-1200-0000-00007d320280&quot;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="o">...</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Entering just a postcode gives a reasonable result:</p>
+<blockquote>
+<div><a class="reference external" href="https://atlas.microsoft.com/search/address/json?api-version=1.0&amp;query=4000&amp;countrySet=AU&amp;subscription">https://atlas.microsoft.com/search/address/json?api-version=1.0&amp;query=4000&amp;countrySet=AU&amp;subscription</a>-key=&lt;KEY&gt;</div></blockquote>
+<p>with the properties listing the suburbs covered by the postcode:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;municipalitySubdivision&quot;</span><span class="p">:</span> <span class="s2">&quot;Spring Hill, Petrie Terrace, Brisbane CBD&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="azure-search">
+<h5><a class="toc-backref" href="#id38">Azure Search</a><a class="headerlink" href="#azure-search" title="Permalink to this headline">¶</a></h5>
+<p>The GeoNames data was easily wrangled and gave a list of towns as well as
+postcodes for towns. These could be put into a service such as Azure Search for
+easy lookups. There’s a <a class="reference external" href="https://azure.microsoft.com/en-us/resources/videos/azure-search-and-geospatial-data/">webcast regarding Geo-spatial search with Azure Search</a>
+with the <a class="reference external" href="https://docs.microsoft.com/en-gb/rest/api/searchservice/Supported-data-types">EDM.GeographyPoint data type</a>
+in the index.</p>
+</div>
+</div>
+</div>
+<div class="section" id="outcomes">
+<h3><a class="toc-backref" href="#id39">Outcomes</a><a class="headerlink" href="#outcomes" title="Permalink to this headline">¶</a></h3>
+<p>The work undertaken here helped me determine a direction for fulfilling the user story being explored:</p>
+<p><strong>As a user I want to locate my nearest weather station so that I can access observations and forecasts relevant to me</strong></p>
+<p>The following approach will be taken:</p>
+<ul class="simple">
+<li>Store the BOM weather station data in CosmosDB and feed these into Azure Search.</li>
+<li>Store the GeoNames postcode and locations data in CosmosDB and feed these into Azure Search.</li>
+<li>Provide the user with various UI inputs to help them find their closest
+weather station:
+- Pre-set weather stations for capital cities
+- HTML 5 GeoLocation API
+- Postcode lookup
+- Suburb/town lookup (we don’t need their full address)</li>
+<li>Use Azure Search’s Geo Spatial functionality to find nearby weather stations.</li>
+</ul>
+</div>
+<div class="section" id="citations">
+<h3><a class="toc-backref" href="#id40">Citations</a><a class="headerlink" href="#citations" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>The GeoNames data is licensed under a <a class="reference external" href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0
+License</a></li>
+<li>The Australian Bureau of Meteorology data is <a class="reference external" href="http://www.bom.gov.au/other/copyright.shtml?ref=ftr">Copyright Commonwealth of Australia 2018, Bureau of Meteorology</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="web-ui">
+<h2><a class="toc-backref" href="#id41">Web UI</a><a class="headerlink" href="#web-ui" title="Permalink to this headline">¶</a></h2>
+<div class="contents topic" id="id1">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#spikes" id="id23">Spikes</a><ul>
+<li><a class="reference internal" href="#getting-a-web-user-s-location" id="id24">Getting a web user’s location</a><ul>
+<li><a class="reference internal" href="#overview" id="id25">Overview</a></li>
+<li><a class="reference internal" href="#user-location" id="id26">User location</a></li>
+<li><a class="reference internal" href="#weather-station-location" id="id27">Weather station location</a></li>
+<li><a class="reference internal" href="#weather-forecast-location" id="id28">Weather forecast location</a></li>
+<li><a class="reference internal" href="#bringing-the-data-together" id="id29">Bringing the data together</a></li>
+<li><a class="reference internal" href="#the-challenges" id="id30">The Challenges</a></li>
+<li><a class="reference internal" href="#spike-solution" id="id31">Spike solution</a><ul>
+<li><a class="reference internal" href="#geolocation-api" id="id32">GeoLocation API</a></li>
+<li><a class="reference internal" href="#data-sources" id="id33">Data sources</a><ul>
+<li><a class="reference internal" href="#geonames-places" id="id34">GeoNames: Places</a></li>
+<li><a class="reference internal" href="#geonames-post-codes" id="id35">GeoNames: Post codes</a></li>
+<li><a class="reference internal" href="#australian-bureau-of-meteorology-bom" id="id36">Australian Bureau of Meteorology (BOM)</a></li>
+<li><a class="reference internal" href="#azure-maps" id="id37">Azure Maps</a></li>
+<li><a class="reference internal" href="#azure-search" id="id38">Azure Search</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outcomes" id="id39">Outcomes</a></li>
+<li><a class="reference internal" href="#citations" id="id40">Citations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#web-ui" id="id41">Web UI</a><ul>
+<li><a class="reference internal" href="#id2" id="id42">Overview</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h3><a class="toc-backref" href="#id42">Overview</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
+      
+        <p>
+        «&#160;&#160;<a href="Environment.html">Environment</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Duncan Dickinson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.0.
+    </div>
+  </body>
+</html>
