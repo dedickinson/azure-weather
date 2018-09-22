@@ -1,4 +1,3 @@
-=============================
 Getting a web user's location
 =============================
 
@@ -316,8 +315,12 @@ Azure Search
 """"""""""""
 
 The GeoNames data was easily wrangled and gave a list of towns as well as
-postcodes for towns. These could be put into a service such as Azure Search for easy lookups. There's a `webcast regarding Geo-spatial search with Azure Search <https://azure.microsoft.com/en-us/resources/videos/azure-search-and-geospatial-data/>`_ with the ```EDM.GeographyPoint`` data type<https://docs.microsoft.com/en-gb/rest/api/searchservice/Supported-data-types>`_ in the index.
-
+postcodes for towns. These could be put into a service such as Azure Search for
+easy lookups. There's a `webcast regarding Geo-spatial search with Azure Search
+<https://azure.microsoft.com/en-us/resources/videos/azure-search-and-geospatial-data/>`_
+with the `EDM.GeographyPoint data type
+<https://docs.microsoft.com/en-gb/rest/api/searchservice/Supported-data-types>`_
+in the index.
 
 Outcomes
 --------
