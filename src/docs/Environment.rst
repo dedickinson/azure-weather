@@ -33,6 +33,7 @@ Languages
     * ESLint
     * Prettier
     * Simple React Snippets
+    * Flow Language Support
 
 * C#
 * Python
