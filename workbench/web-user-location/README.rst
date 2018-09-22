@@ -1,6 +1,8 @@
-# Getting a web user's location
+Getting a web user's location
+=============================
 
-## Overview
+Overview
+-----------
 
 For the web UI I wanted to have a static site calling into APIs. The
 requirement can be described in the following user story:
