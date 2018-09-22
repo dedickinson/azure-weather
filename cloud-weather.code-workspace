@@ -1,13 +1,17 @@
 {
-	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"path": "workbench/web-user-location"
-		}
-	],
-	"settings": {
-		"restructuredtext.confPath": ""
-	}
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "workbench/web-user-location"
+    },
+    {
+      "path": "workbench/web-ui"
+    }
+  ],
+  "settings": {
+    "restructuredtext.confPath": "",
+    "javascript.validate.enable": false
+  }
 }
